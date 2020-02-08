@@ -1,0 +1,5 @@
+2020/02/08 16:42:27 main.go:44: debug begin
+2020/02/08 16:49:49 main.go:40: debug url:https://github.com/kekemuyu/tools/archive/master.zip
+2020/02/08 16:49:49 main.go:41: debug 下载完成，网站总访问次数：1
+2020/02/08 16:57:53 main.go:40: debug url:https://github.com/kekemuyu/tools/archive/master.zip
+2020/02/08 16:57:53 main.go:41: debug 下载完成，网站总访问次数：1

@@ -58,22 +58,39 @@ func updateHosts(hostsDir string, hosts []*Hosts) error {
 	defer fin.Close()
 
 	rwio := bufio.NewReader(fin)
-
+	rwio.Reset(fin)
+	fin.WriteAt([]byte("hello\r\n"), 0)
+	fin.WriteAt([]byte("hello\r\n"), 7)
+	fin.WriteAt([]byte("hello\r\n"), 14)
 	seekp := int64(0) //文件当前位置
 	lineLen := int64(0)
 
 	for {
-		linebs, _, err := rwio.ReadLine()
-		if err == io.EOF {
+		linebs, isPrefix, err := rwio.ReadLine()
+		if isPrefix {
+			fmt.Println("无行尾标记")
 			break
 		}
-		lineLen = int64(len(linebs) + 1)
+		if err == io.EOF {
+			fin.Close()
+			fmt.Println("读完")
+			break
+		}
+		lineLen = int64(len(linebs) + 2)
+		fmt.Println("edit before:", seekp, lineLen)
 		for _, v := range hosts {
 			if strings.Contains(string(linebs), v.Domain) {
-				fmt.Println("edit:", v)
-				intext := v.Domain + "   " + v.Ip + "\n"
+				fmt.Println("edit:", v, seekp, lineLen)
+				intext := v.Domain + "   " + v.Ip + "\r\n"
+				delbs := make([]byte, 0)
+				for i := 0; i < int(lineLen); i++ {
+					delbs = append(delbs, 127) //127 is asiic DEL
+				}
+
+				fin.WriteAt(delbs, seekp) //delete this line
 				fin.WriteAt([]byte(intext), seekp)
 				lineLen = int64(len([]byte(intext)))
+				fmt.Println(lineLen)
 				v.Isupdated = true
 				break
 			}
@@ -86,10 +103,12 @@ func updateHosts(hostsDir string, hosts []*Hosts) error {
 	//append
 	for _, v := range hosts {
 		if v.Isupdated == false {
-			fmt.Println("append:", v)
-			intext := "\n" + v.Domain + "   " + v.Ip + "\n"
+			fmt.Println("append:", v, seekp, lineLen)
+			intext := v.Domain + "   " + v.Ip + "\r\n"
+
 			fin.WriteAt([]byte(intext), seekp)
 			lineLen = int64(len([]byte(intext)))
+			fmt.Println(lineLen)
 			seekp += lineLen
 		}
 	}
@@ -119,11 +138,11 @@ func main() {
 	}
 
 	hostdir := "test.txt"
-	if ostype == "windows" {
-		hostdir = "C:/Windows/System32/drivers/etc/hosts"
-	} else if ostype == "linux" {
-		hostdir = "/etc/hosts"
-	}
+	// if ostype == "windows" {
+	// 	hostdir = "C:/Windows/System32/drivers/etc/hosts"
+	// } else if ostype == "linux" {
+	// 	hostdir = "/etc/hosts"
+	// }
 	updateHosts(hostdir, hosts)
 
 	var cmddns, arg string

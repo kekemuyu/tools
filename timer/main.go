@@ -1,23 +1,10 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/kekemuyu/tools/timer/ttimer"
-
-	"github.com/gen2brain/beeep"
-	"github.com/nsf/termbox-go"
+	"timer/ttimer"
 )
 
-func Beep(n int) {
-	for i := 0; i < n; i++ {
-		err := beeep.Beep(beeep.DefaultFreq, beeep.DefaultDuration)
-		if err != nil {
-			panic(err)
-		}
-	}
-}
-
 func main() {
-	ttimer.New()
+	t := ttimer.New()
+	t.Run()
 }

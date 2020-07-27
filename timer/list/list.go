@@ -212,6 +212,14 @@ func (c *List) TitleItemDec() {
 	showSetMsg(c.Title.Marginx, c.Title.Marginy, c.Title.Fg, c.Title.Bg, c.Title.SelFg, c.Title.SelBg, c.Title.Name, setitem, item_width)
 }
 
+func (c *List) TitleNameToTime() time.Time {
+	loc, _ := time.LoadLocation("Local")
+	settime, err := time.ParseInLocation("2006-01-02 15:04:05", c.Title.Name, loc)
+	if err != nil {
+		panic(err)
+	}
+	return settime
+}
 func showmsg(x, y int, fg, bg termbox.Attribute, msg string) {
 	for _, c := range msg {
 		termbox.SetCell(x, y, c, fg, bg)

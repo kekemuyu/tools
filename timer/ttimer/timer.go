@@ -3,9 +3,9 @@ package ttimer
 import (
 	"time"
 
-	"github.com/kekemuyu/tools/timer/list"
+	"timer/list"
 
-	// "github.com/gen2brain/beeep"
+	"github.com/gen2brain/beeep"
 	"github.com/nsf/termbox-go"
 )
 
@@ -21,8 +21,9 @@ const (
 )
 
 type Timer struct {
-	Settime []time.Time
-	Timeup  chan time.Time
+	TimerList *list.List
+	Settime   []time.Time
+	Timeup    chan time.Time
 }
 
 func New() *Timer {
@@ -33,6 +34,8 @@ func New() *Timer {
 }
 
 func (c *Timer) Run() {
+	c.Init()
+	list := c.TimerList
 	go func() {
 		for {
 			if len(c.Settime) > 0 {
@@ -45,6 +48,14 @@ func (c *Timer) Run() {
 		}
 	}()
 
+	go func() {
+		for {
+			select {
+			case <-c.Timeup:
+				Beep(30)
+			}
+		}
+	}()
 mainloop:
 	for {
 		switch ev := termbox.PollEvent(); ev.Type {
@@ -52,10 +63,27 @@ mainloop:
 			switch ev.Key {
 			case termbox.KeyEsc:
 				break mainloop
-			case KeyTab:
-			case KeyArrowUp:
-			case KeyArrowDown:
-			case KeySpace:
+			case termbox.KeyTab:
+				list.TitleSelect()
+				termbox.Flush()
+			case termbox.KeyArrowUp:
+				list.TitleItemAdd()
+				termbox.Flush()
+			case termbox.KeyArrowDown:
+				list.TitleItemDec()
+				termbox.Flush()
+			case termbox.KeySpace:
+				settime := list.TitleNameToTime()
+				c.Settime = append(c.Settime, settime)
+
+				msg := make([]string, 0)
+				for _, v := range c.Settime {
+					msg = append(msg, v.Format("2006-01-02 15:04:05"))
+				}
+				list.Msg = msg
+				list.Clear()
+				list.Show()
+				termbox.Flush()
 			}
 
 		case termbox.EventError:
@@ -65,7 +93,8 @@ mainloop:
 	}
 }
 
-func (c *Timer) Init(fg, bg termbox.Attribute) {
+func (c *Timer) Init() {
+	fg, bg := termbox.ColorDefault, termbox.ColorDefault
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
@@ -81,6 +110,16 @@ func (c *Timer) Init(fg, bg termbox.Attribute) {
 	settime_text_x := midx
 	settime_text_y := midy - 2
 
-	list.New(settime_text_x, settime_text_y, WIDTH, HIGHT, fg, bg)
+	c.TimerList = list.New(settime_text_x, settime_text_y, WIDTH, HIGHT, fg, bg)
+	c.TimerList.TitleInit()
 	termbox.Flush()
+}
+
+func Beep(n int) {
+	for i := 0; i < n; i++ {
+		err := beeep.Beep(beeep.DefaultFreq, beeep.DefaultDuration)
+		if err != nil {
+			panic(err)
+		}
+	}
 }

@@ -2,7 +2,8 @@ package timer
 
 import (
 	"time"
-	"tools/timer/list"
+
+	"github.com/kekemuyu/tools/timer/list"
 
 	// "github.com/gen2brain/beeep"
 	"github.com/nsf/termbox-go"

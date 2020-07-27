@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"tools/timer/timer"
+
+	"github.com/kekemuyu/tools/timer/timer"
 
 	"github.com/gen2brain/beeep"
 	"github.com/nsf/termbox-go"

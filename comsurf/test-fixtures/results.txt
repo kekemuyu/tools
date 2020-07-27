@@ -1,0 +1,510 @@
+
+Valid: relative url => 200
+====================================
+
+GET / HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/html
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+3d5
+<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Gofile</title>
+      <meta charset="utf-8" />
+	  <style>
+	    body { font-family:monospace; padding:0; margin:0; }
+	    h1,h2,h3,h4,h5,h6 { margin:10px; padding:10px; }
+	    ul { padding:0; margin:0; }
+	    li { padding:0; margin:1px 0; background-color:#eee; list-style:none; }
+	    li.dir { background-color:#B8D2E8; font-weight:bold; /*eea;*/ }
+	    li a { color:#29414E; text-decoration:none; display:block; padding:5px 20px; }
+	  </style>
+    </head>
+    <body><h1>Directory Listing for /</h1><ul><li class='dir' ><a href='/.git'>.git/</a></li>
+<li><a href='/.gitignore'>.gitignore</a></li>
+<li><a href='/CHANGELOG.md'>CHANGELOG.md</a></li>
+<li><a href='/README.md'>README.md</a></li>
+<li><a href='/fileserver.go'>fileserver.go</a></li>
+<li class='dir' ><a href='/http'>http/</a></li>
+<li class='dir' ><a href='/log'>log/</a></li>
+<li><a href='/main.go'>main.go</a></li>
+<li><a href='/run-tests.bash'>run-tests.bash</a></li>
+
+83
+<li class='dir' ><a href='/test-fixtures'>test-fixtures/</a></li>
+<li><a href='/tests.bash'>tests.bash</a></li>
+</ul></body></html>
+0
+
+
+HEAD / HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+
+Valid: modified, normal response => 200
+====================================
+
+GET /test-fixtures/date.txt HTTP/1.1
+Host: localhost
+If-Modified-Since: Sun, 09 Sep 2001 06:16:40 IRDT
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 24
+
+18
+Tue Mar 1 10:13:47 2016
+
+0
+
+
+Valid: not modified, body should be empty => 304
+====================================
+
+GET /test-fixtures/date.txt HTTP/1.1
+Host: localhost
+If-Modified-Since: Wed, 14 Mar 2255 19:30:00 IRST
+Connection: close
+
+HTTP/1.1 304 Not Modified
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+
+Valid: range header => 200
+====================================
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=-10
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 90-99/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 10
+
+a
+J123456789
+0
+
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=90-
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 90-99/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 10
+
+a
+J123456789
+0
+
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=10-10
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 10-10/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 1
+
+1
+B
+0
+
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=10-20
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 10-20/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 11
+
+b
+B123456789C
+0
+
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=-1
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 99-99/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 1
+
+1
+9
+0
+
+
+GET /test-fixtures/100.txt HTTP/1.1
+Host: localhost
+Range: bytes=0-10,20-
+Connection: close
+
+HTTP/1.1 206 Partial Content
+Content-Range: 0-10/100
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 11
+
+b
+A123456789B
+0
+
+
+Valid: absolute url => 200
+====================================
+
+GET http://localhost:8080/ HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/html
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+3d5
+<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Gofile</title>
+      <meta charset="utf-8" />
+	  <style>
+	    body { font-family:monospace; padding:0; margin:0; }
+	    h1,h2,h3,h4,h5,h6 { margin:10px; padding:10px; }
+	    ul { padding:0; margin:0; }
+	    li { padding:0; margin:1px 0; background-color:#eee; list-style:none; }
+	    li.dir { background-color:#B8D2E8; font-weight:bold; /*eea;*/ }
+	    li a { color:#29414E; text-decoration:none; display:block; padding:5px 20px; }
+	  </style>
+    </head>
+    <body><h1>Directory Listing for /</h1><ul><li class='dir' ><a href='/.git'>.git/</a></li>
+<li><a href='/.gitignore'>.gitignore</a></li>
+<li><a href='/CHANGELOG.md'>CHANGELOG.md</a></li>
+<li><a href='/README.md'>README.md</a></li>
+<li><a href='/fileserver.go'>fileserver.go</a></li>
+<li class='dir' ><a href='/http'>http/</a></li>
+<li class='dir' ><a href='/log'>log/</a></li>
+<li><a href='/main.go'>main.go</a></li>
+<li><a href='/run-tests.bash'>run-tests.bash</a></li>
+
+83
+<li class='dir' ><a href='/test-fixtures'>test-fixtures/</a></li>
+<li><a href='/tests.bash'>tests.bash</a></li>
+</ul></body></html>
+0
+
+
+Valid: should not be chunked, no Transfer-Encoding header, must have Content-Length => 200
+====================================
+
+GET /test-fixtures/date.txt HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 24
+
+18
+Tue Mar 1 10:13:47 2016
+
+0
+
+
+Valid: special characters => 200
+====================================
+
+GET /test-fixtures/a+b+c+(d)/یک.txt HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 6
+
+6
+hello
+
+0
+
+
+GET /test-fixtures/a+b+c+(d)/e+f+g+[h]/test.txt HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain; charset=utf-8
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+Content-Length: 6
+
+6
+world
+
+0
+
+
+Valid: should not found => 404
+====================================
+
+GET /foo HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+0
+
+
+Invalid: no 'Host' header => 400
+====================================
+
+GET / HTTP/1.1
+Connection: close
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+
+Invalid: bad paths => 401
+====================================
+
+GET ../ HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+1d
+Requested URI is not allowed
+
+0
+
+
+GET /.. HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+1d
+Requested URI is not allowed
+
+0
+
+
+GET http://localhost:8080/../ HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+1d
+Requested URI is not allowed
+
+0
+
+
+Invalid: bad method => 501
+====================================
+
+POST / HTTP/1.1
+Host: localhost
+Connection: close
+
+HTTP/1.1 501 Not Implemented
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+
+Invalid: bad protocol
+====================================
+
+GET / HTTP/BAD
+Host: localhost
+Connection: close
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/plain
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+1e
+Invalid initial request line.
+
+0
+
+
+A file larger than the response chunk size (1M) should be identical to the original file
+====================================
+Files 2m.file and test-fixtures/2m.file are identical
+
+Valid: keepalive should not disconnect, because no 'Connection: close\r\n' header is present
+====================================
+
+GET / HTTP/1.1
+Host: localhost
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+Accept-Ranges: byte
+Content-Type: text/html
+Server: Gofile/0.3.0 go1.7rc1
+Date: [FILTERED BY TEST SCRIPT]
+Transfer-Encoding: chunked
+
+3d5
+<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Gofile</title>
+      <meta charset="utf-8" />
+	  <style>
+	    body { font-family:monospace; padding:0; margin:0; }
+	    h1,h2,h3,h4,h5,h6 { margin:10px; padding:10px; }
+	    ul { padding:0; margin:0; }
+	    li { padding:0; margin:1px 0; background-color:#eee; list-style:none; }
+	    li.dir { background-color:#B8D2E8; font-weight:bold; /*eea;*/ }
+	    li a { color:#29414E; text-decoration:none; display:block; padding:5px 20px; }
+	  </style>
+    </head>
+    <body><h1>Directory Listing for /</h1><ul><li class='dir' ><a href='/.git'>.git/</a></li>
+<li><a href='/.gitignore'>.gitignore</a></li>
+<li><a href='/CHANGELOG.md'>CHANGELOG.md</a></li>
+<li><a href='/README.md'>README.md</a></li>
+<li><a href='/fileserver.go'>fileserver.go</a></li>
+<li class='dir' ><a href='/http'>http/</a></li>
+<li class='dir' ><a href='/log'>log/</a></li>
+<li><a href='/main.go'>main.go</a></li>
+<li><a href='/run-tests.bash'>run-tests.bash</a></li>
+
+83
+<li class='dir' ><a href='/test-fixtures'>test-fixtures/</a></li>
+<li><a href='/tests.bash'>tests.bash</a></li>
+</ul></body></html>
+0
+

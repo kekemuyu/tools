@@ -57,13 +57,13 @@ func New(x, y int, w, h int, fg, bg termbox.Attribute) *List {
 	nowtime := time.Now().Format("2006-01-02 15:04:05")
 	title = BoxTitle{
 		Name:    nowtime,
-		Marginx: x,
+		Marginx: x + 4,
 		Marginy: y - 2,
 		Width:   w,
 		Hight:   y,
 		Fg:      fg,
 		Bg:      bg,
-		SelFg:   termbox.ColorWhite,
+		SelFg:   termbox.ColorGreen,
 		SelBg:   bg,
 	}
 
@@ -80,7 +80,7 @@ func New(x, y int, w, h int, fg, bg termbox.Attribute) *List {
 	}
 
 	content := Box{
-		Marginx: x + 1,
+		Marginx: x + 4,
 		Marginy: y + 1,
 		Width:   w - 2,
 		Hight:   y - 2,
@@ -88,6 +88,7 @@ func New(x, y int, w, h int, fg, bg termbox.Attribute) *List {
 		Bg:      bg,
 	}
 	return &List{
+		Title:   title,
 		Boarder: boarder,
 		Content: content,
 	}
@@ -116,8 +117,8 @@ func (c *List) Show() {
 	y := c.Content.Marginy
 	fg := c.Content.Fg
 	bg := c.Content.Bg
-	for _, v := range msg {
-		showmsg(x, y, fg, bg, v)
+	for k, v := range msg {
+		showmsg(x, y+k, fg, bg, v)
 	}
 }
 
@@ -168,17 +169,17 @@ func (c *List) TitleItemAdd() {
 	}
 	switch c.Title.SetItem {
 	case SET_YEAR:
-		settime.AddDate(1, 0, 0)
+		settime = settime.AddDate(1, 0, 0)
 	case SET_MON:
-		settime.AddDate(0, 1, 0)
+		settime = settime.AddDate(0, 1, 0)
 	case SET_DAY:
-		settime.AddDate(0, 0, 1)
+		settime = settime.AddDate(0, 0, 1)
 	case SET_H:
-		settime.Add(time.Hour)
+		settime = settime.Add(time.Hour)
 	case SET_M:
-		settime.Add(time.Minute)
+		settime = settime.Add(time.Minute)
 	case SET_S:
-		settime.Add(time.Second)
+		settime = settime.Add(time.Second)
 	}
 
 	c.Title.Name = settime.Format("2006-01-02 15:04:05")
@@ -194,17 +195,17 @@ func (c *List) TitleItemDec() {
 	}
 	switch c.Title.SetItem {
 	case SET_YEAR:
-		settime.AddDate(-1, 0, 0)
+		settime = settime.AddDate(-1, 0, 0)
 	case SET_MON:
-		settime.AddDate(0, -1, 0)
+		settime = settime.AddDate(0, -1, 0)
 	case SET_DAY:
-		settime.AddDate(0, 0, -1)
+		settime = settime.AddDate(0, 0, -1)
 	case SET_H:
-		settime.Add(-time.Hour)
+		settime = settime.Add(-time.Hour)
 	case SET_M:
-		settime.Add(-time.Minute)
+		settime = settime.Add(-time.Minute)
 	case SET_S:
-		settime.Add(-time.Second)
+		settime = settime.Add(-time.Second)
 	}
 
 	c.Title.Name = settime.Format("2006-01-02 15:04:05")

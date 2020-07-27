@@ -6,12 +6,13 @@ import (
 	"timer/list"
 
 	"github.com/gen2brain/beeep"
+	"github.com/mattn/go-runewidth"
 	"github.com/nsf/termbox-go"
 )
 
 const (
 	WIDTH = 30
-	HIGHT = 60
+	HIGHT = 10
 
 	TEXT_WIDTH = WIDTH - 2
 	TEXT_HIGHT = HIGHT - 2
@@ -29,22 +30,42 @@ type Timer struct {
 func New() *Timer {
 	return &Timer{
 		Settime: make([]time.Time, 0),
-		Timeup:  make(chan time.Time),
+		Timeup:  make(chan time.Time, 10),
 	}
 }
 
 func (c *Timer) Run() {
+	defer termbox.Close()
 	c.Init()
 	list := c.TimerList
 	go func() {
 		for {
+			now := time.Now()
+
 			if len(c.Settime) > 0 {
-				for _, v := range c.Settime {
-					if v.Equal(time.Now()) {
+				for k, v := range c.Settime {
+
+					if v.Before(now) || v.Equal(now) {
+						if k == 0 {
+							c.Settime = c.Settime[1:]
+						} else if k == len(c.Settime)-1 {
+							c.Settime = c.Settime[:len(c.Settime)-1]
+						} else if k > 0 && k < len(c.Settime) {
+							c.Settime = append(c.Settime[0:k], c.Settime[k+1:]...)
+						}
+						msg := make([]string, 0)
+						for _, v := range c.Settime {
+							msg = append(msg, v.Format("2006-01-02 15:04:05"))
+						}
+						list.Msg = msg
+						list.Clear()
+						list.Show()
+
 						c.Timeup <- v
 					}
 				}
 			}
+			termbox.Flush()
 		}
 	}()
 
@@ -63,7 +84,8 @@ mainloop:
 			switch ev.Key {
 			case termbox.KeyEsc:
 				break mainloop
-			case termbox.KeyTab:
+			case termbox.KeyArrowLeft, termbox.KeyArrowRight:
+
 				list.TitleSelect()
 				termbox.Flush()
 			case termbox.KeyArrowUp:
@@ -99,7 +121,7 @@ func (c *Timer) Init() {
 	if err != nil {
 		panic(err)
 	}
-	defer termbox.Close()
+
 	termbox.SetInputMode(termbox.InputEsc)
 
 	termbox.Clear(fg, bg)
@@ -121,5 +143,12 @@ func Beep(n int) {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func showmsg(x, y int, fg, bg termbox.Attribute, msg string) {
+	for _, c := range msg {
+		termbox.SetCell(x, y, c, fg, bg)
+		x += runewidth.RuneWidth(c)
 	}
 }

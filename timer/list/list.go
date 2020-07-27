@@ -82,8 +82,8 @@ func New(x, y int, w, h int, fg, bg termbox.Attribute) *List {
 	content := Box{
 		Marginx: x + 4,
 		Marginy: y + 1,
-		Width:   w - 2,
-		Hight:   y - 2,
+		Width:   w - 4,
+		Hight:   y - 4,
 		Fg:      fg,
 		Bg:      bg,
 	}

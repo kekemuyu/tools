@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/kekemuyu/tools/timer/timer"
+	"github.com/kekemuyu/tools/timer/ttimer"
 
 	"github.com/gen2brain/beeep"
 	"github.com/nsf/termbox-go"
@@ -19,5 +19,5 @@ func Beep(n int) {
 }
 
 func main() {
-	timer.New()
+	ttimer.New()
 }

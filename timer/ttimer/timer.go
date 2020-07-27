@@ -1,4 +1,4 @@
-package timer
+package ttimer
 
 import (
 	"time"

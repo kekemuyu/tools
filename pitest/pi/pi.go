@@ -28,8 +28,11 @@ func New() *Pi {
 
 func (c *Pi) GetCpu() {
 	cmd := exec.Command("/bin/bash", "-c", ` top -n1 | awk '/Cpu\(s\):/ {print $2}'`)
-
-	fmt.Println(cmd.Output())
+	out, _ := cmd.StdoutPipe()
+	cmd.Run()
+	bs := make([]byte, 1024)
+	n, err := out.Read(bs)
+	fmt.Println(bs[:n], err)
 
 	// ps := exec.Command("top", "-n1")
 	// grep := exec.Command("awk", `'/Cpu\(s\):/ {print $2}'`)

@@ -43,7 +43,7 @@ func (c *Pi) GetCpu() {
 	ps.Wait()
 	w.Close()
 	grep.Wait()
-	fmt.Println(string(buffer.Bytes()))
+	fmt.Println(buffer.String())
 	io.Copy(os.Stdout, &buffer) // buffer拷贝到系统标准输出
 
 }

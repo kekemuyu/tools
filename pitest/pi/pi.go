@@ -1,7 +1,7 @@
 package pi
 
 import (
-	"io/ioutil"
+
 	// "bytes"
 	"fmt"
 	// "io"
@@ -28,12 +28,8 @@ func New() *Pi {
 
 func (c *Pi) GetCpu() {
 	cmd := exec.Command("top")
-	out := cmd.Stdin
-	cmd.Run()
 
-	bs, err := ioutil.ReadAll(out)
-
-	fmt.Println(err, bs)
+	fmt.Println(cmd.Output())
 	// ps := exec.Command("top", "-n1")
 	// grep := exec.Command("awk", `'/Cpu\(s\):/ {print $2}'`)
 

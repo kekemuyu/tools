@@ -1,10 +1,10 @@
 package pi
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
-	"io"
-	"os"
+	// "io"
+	// "os"
 	"os/exec"
 )
 
@@ -26,27 +26,34 @@ func New() *Pi {
 }
 
 func (c *Pi) GetCpu() {
-	ps := exec.Command("top", "-n1")
-	grep := exec.Command("awk", `'/Cpu\(s\):/ {print $2}'`)
-
-	r, w := io.Pipe() // 创建一个管道
-	defer r.Close()
-	defer w.Close()
-	ps.Stdout = w  // ps向管道的一端写
-	grep.Stdin = r // grep从管道的一端读
-
-	var buffer bytes.Buffer
-	grep.Stdout = &buffer // grep的输出为buffer
-
-	_ = ps.Start()
-	_ = grep.Start()
-	ps.Wait()
-	w.Close()
-	grep.Wait()
+	cmd := exec.Command("top")
+	out := cmd.Stdout
+	cmd.Run()
 	bs := make([]byte, 1024)
-	length, err := buffer.Read(bs)
+
+	length, err := out.Write(bs)
 	fmt.Println(length, err, bs[:length])
-	io.Copy(os.Stdout, &buffer) // buffer拷贝到系统标准输出
+	// ps := exec.Command("top", "-n1")
+	// grep := exec.Command("awk", `'/Cpu\(s\):/ {print $2}'`)
+
+	// r, w := io.Pipe() // 创建一个管道
+	// defer r.Close()
+	// defer w.Close()
+	// ps.Stdout = w  // ps向管道的一端写
+	// grep.Stdin = r // grep从管道的一端读
+
+	// var buffer bytes.Buffer
+	// grep.Stdout = &buffer // grep的输出为buffer
+
+	// _ = ps.Start()
+	// _ = grep.Start()
+	// ps.Wait()
+	// w.Close()
+	// grep.Wait()
+	// bs := make([]byte, 1024)
+	// length, err := buffer.Read(bs)
+	// fmt.Println(length, err, bs[:length])
+	// io.Copy(os.Stdout, &buffer) // buffer拷贝到系统标准输出
 
 }
 

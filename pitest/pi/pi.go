@@ -2,6 +2,7 @@ package pi
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -42,6 +43,7 @@ func (c *Pi) GetCpu() {
 	ps.Wait()
 	w.Close()
 	grep.Wait()
+	fmt.Println(string(buffer.Bytes()))
 	io.Copy(os.Stdout, &buffer) // buffer拷贝到系统标准输出
 
 }

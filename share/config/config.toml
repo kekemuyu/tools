@@ -1,0 +1,8 @@
+[localaddr]
+ip="0.0.0.0"
+port=9000
+ping_port=9001
+[remoteaddr]
+ip="192.168.31.255"
+port=9000
+ping_port=9001
